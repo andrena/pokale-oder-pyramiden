@@ -12,20 +12,20 @@ class AccessService {
     private lateinit var doorRepo: DoorRepository
 
     @Autowired
-    private lateinit var userRoleRepository: UserRoleRepository
+    private lateinit var userRepository: UserRepository
 
     @Autowired
     private lateinit var accessRightRepo: AccessRightRepository
 
     fun isAccessAllowedTo(doorId: Long, userId: Long, dateTime: LocalDateTime): Boolean {
-        val userRole = userRoleRepository.findByUserId(userId)?.role
+        val userRole = userRepository.findItById(userId)?.role
         val userAdmitted = isRegularUser(userRole) || isManager(userRole)
         val accessGranted = isManager(userRole) || (checkDoor(doorId) && checkAccessRights(userId, doorId, dateTime))
         return userAdmitted && accessGranted
     }
 
     fun isMaintenanceAccessAllowedTo(doorId: Long, userId: Long, dateTime: LocalDateTime): Boolean {
-        val userRole = userRoleRepository.findByUserId(userId)?.role
+        val userRole = userRepository.findItById(userId)?.role
         val userAdmitted = isMaintainer(userRole)
         return userAdmitted && checkAccessRights(userId, doorId, dateTime)
     }

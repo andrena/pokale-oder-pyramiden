@@ -23,28 +23,23 @@ internal class UserAccessRightServiceTest {
     @MockK
     private lateinit var accessRightRepo: AccessRightRepository
     private val accessRight = AccessRights.alwaysAccess()
-
     @InjectMockKs
     private lateinit var service: UserAccessRightService
 
     @BeforeEach
     internal fun setUp() {
-        every { doorRepo.findItById(doorId) } returns door
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns accessRight
     }
-
     @Test
     internal fun getUserAccessRight_doorDoesNotExists_ReturnsNoRight() {
         every { doorRepo.findItById(doorId) } returns null
         val right = service.getUserAccessRight(doorId, userId)
         assertThat(right).isSameAs(NO_RIGHT)
     }
-
     @Test
     internal fun getUserAccessRight_ReturnsUserAccessRight() {
+        every { doorRepo.findItById(doorId) } returns door
         val right = service.getUserAccessRight(doorId, userId)
-        val expected = UserAccessRight(accessRight, door)
-        assertThat(right).isEqualTo(expected)
+        assertThat(right).isEqualTo(UserAccessRight(accessRight, door))
     }
-
 }

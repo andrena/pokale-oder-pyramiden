@@ -23,10 +23,8 @@ private val doorInMaintenance = Door(doorId, "secondEntrance", true)
 internal class AccessServiceTest {
     @MockK
     private lateinit var doorRepo: DoorRepository
-
     @MockK
-    private lateinit var userRoleRepo: UserRoleRepository
-
+    private lateinit var userRepo: UserRepository
     @MockK
     private lateinit var accessRightRepo: AccessRightRepository
 
@@ -36,7 +34,7 @@ internal class AccessServiceTest {
     @BeforeEach
     internal fun setUp() {
         every { doorRepo.findItById(doorId) } returns door
-        every { userRoleRepo.findByUserId(userId) } returns UserRoleEntry(1,UserRole.REGULAR)
+        every { userRepo.findItById(userId) } returns User(1,UserRole.REGULAR)
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns null
     }
 

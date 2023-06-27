@@ -7,9 +7,9 @@ import de.andrena.access.domain.access.UserAccessRightService
 import de.andrena.access.domain.access.model.AccessRights
 import de.andrena.access.domain.access.model.Door
 import de.andrena.access.domain.user.EntitledUserService
-import de.andrena.access.domain.user.UserRoleRepository
+import de.andrena.access.domain.user.UserRepository
 import de.andrena.access.domain.user.model.UserRole
-import de.andrena.access.domain.user.model.UserRoleEntry
+import de.andrena.access.domain.user.model.User
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -29,12 +29,10 @@ private val door = Door(doorId, "entrance")
 internal class AccessControllerUnitTest {
     @MockK
     private lateinit var doorRepo: DoorRepository
-
     @MockK
     private lateinit var accessRightRepo: AccessRightRepository
-
     @MockK
-    private lateinit var userRoleRepository: UserRoleRepository
+    private lateinit var userRepository: UserRepository
     private lateinit var userAccessRightService: UserAccessRightService
     private lateinit var entitledUserService: EntitledUserService
     private lateinit var service: AccessService
@@ -43,17 +41,16 @@ internal class AccessControllerUnitTest {
     @BeforeEach
     internal fun setUp() {
         userAccessRightService = UserAccessRightService(doorRepo, accessRightRepo)
-        entitledUserService = EntitledUserService(userRoleRepository)
+        entitledUserService = EntitledUserService(userRepository)
         service = AccessService(userAccessRightService, entitledUserService)
         controller = AccessController(service)
-
         every { doorRepo.findItById(doorId) } returns door
     }
 
     @Test
     internal fun isAccessAllowedTo_RegularUserWithAccess_ReturnsTrue() {
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
-        every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1, UserRole.REGULAR)
+        every { userRepository.findItById(userId) } returns User(-1, UserRole.REGULAR)
 
         assertThat(controller.isAccessAllowed(doorId, userId, now)).isTrue
     }
@@ -61,7 +58,7 @@ internal class AccessControllerUnitTest {
     @Test
     internal fun isAccessAllowedTo_RegularUserWithoutAccess_ReturnsFalse() {
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.neverAccess()
-        every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1, UserRole.REGULAR)
+        every { userRepository.findItById(userId) } returns User(-1, UserRole.REGULAR)
 
         assertThat(controller.isAccessAllowed(doorId, userId, now)).isFalse
     }
@@ -69,7 +66,7 @@ internal class AccessControllerUnitTest {
     @Test
     internal fun isMaintenanceAccessAllowedTo_RegularUserWithAccess_ReturnsFalse() {
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
-        every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1, UserRole.REGULAR)
+        every { userRepository.findItById(userId) } returns User(-1, UserRole.REGULAR)
 
         assertThat(controller.isMaintenanceAccessAllowed(doorId, userId, now)).isFalse
     }
@@ -77,7 +74,7 @@ internal class AccessControllerUnitTest {
     @Test
     internal fun isMaintenanceAccessAllowedTo_MaintainerUserWithAccess_ReturnsTrue() {
         every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
-        every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1, UserRole.MAINTAINER)
+        every { userRepository.findItById(userId) } returns User(-1, UserRole.MAINTAINER)
 
         assertThat(controller.isMaintenanceAccessAllowed(doorId, userId, now)).isTrue
     }

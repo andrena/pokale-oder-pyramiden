@@ -18,7 +18,7 @@ private const val userId = 123L
 internal class EntitledUserServiceTest {
 
     @MockK
-    private lateinit var userRoleRepository: UserRoleRepository
+    private lateinit var userRepository: UserRepository
 
     @InjectMockKs
     private lateinit var service: EntitledUserService
@@ -26,8 +26,8 @@ internal class EntitledUserServiceTest {
     @ParameterizedTest
     @MethodSource("mapping")
     fun map(role: UserRole?, expected: EntitledUser) {
-        val roleEntry = role?.let { UserRoleEntry(-1, it) }
-        every { userRoleRepository.findByUserId(userId) } returns roleEntry
+        val roleEntry = role?.let { User(-1, it) }
+        every { userRepository.findItById(userId) } returns roleEntry
         assertThat(service.getEntitledUser(userId)).isInstanceOf(expected.javaClass)
     }
 

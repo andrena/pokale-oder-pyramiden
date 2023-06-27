@@ -24,7 +24,6 @@ internal class EntitledUserTest {
             accessRight = UserAccessRights.neverAccess()
             assertThat(ManagerUser().hasAccess(accessRight, now)).isTrue
         }
-
         @Test
         internal fun hasMaintenanceAccess_passedAccessRightIsIgnored_ReturnsAlwaysFalse() {
             accessRight = UserAccessRights.alwaysAccess()

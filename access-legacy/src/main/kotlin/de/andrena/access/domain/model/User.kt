@@ -4,4 +4,4 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Id
 
 @Entity
-class UserRoleEntry(@Id val userId: Long, val role: UserRole)
+class User(@Id val id: Long, val role: UserRole)

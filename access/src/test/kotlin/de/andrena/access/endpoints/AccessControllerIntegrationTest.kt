@@ -4,7 +4,7 @@ import de.andrena.access.domain.access.model.AccessRight
 import de.andrena.access.domain.access.model.Door
 import de.andrena.access.domain.access.model.Schedule
 import de.andrena.access.domain.user.model.UserRole
-import de.andrena.access.domain.user.model.UserRoleEntry
+import de.andrena.access.domain.user.model.User
 import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -20,51 +20,48 @@ private const val userId = 123L
 private const val doorId = 456L
 private val door = Door(doorId, "entrance")
 private val accessRightAlways = AccessRight(
-    111, userId, doorId, listOf(Schedule(222, LocalTime.MIN, LocalTime.MAX, DayOfWeek.values().toList()))
+    111, userId, doorId, listOf(Schedule(222, LocalTime.MIN, LocalTime.MAX,
+        DayOfWeek.values().toList()))
 )
 private val accessRightNever = AccessRight(
-    111, userId, doorId, listOf(Schedule(222, LocalTime.MIN, LocalTime.MAX, emptyList()))
+    111, userId, doorId, listOf(Schedule(222, LocalTime.MIN, LocalTime.MAX,
+        emptyList()))
 )
-private val regularRole = UserRoleEntry(userId, UserRole.REGULAR)
-private val maintainerRole = UserRoleEntry(userId, UserRole.MAINTAINER)
+private val regularUser = User(userId, UserRole.REGULAR)
+private val maintainerUser = User(userId, UserRole.MAINTAINER)
 
 @SpringBootTest
 @Transactional
 internal class AccessControllerIntegrationTest {
     @Autowired
     private lateinit var entityManager: EntityManager
-
     @Autowired
     private lateinit var controller: AccessController
-
     @BeforeEach
     internal fun setUp() {
         entityManager.persist(door)
     }
-
     @Test
     internal fun isAccessAllowed_NoData_ReturnsFalse() {
         assertThat(controller.isAccessAllowed(888, 999, LocalDateTime.now())).isFalse
     }
-
     @Test
     internal fun isAccessAllowed_RegularUserWithoutRights_ReturnsFalse() {
         entityManager.persist(accessRightNever)
-        entityManager.persist(regularRole)
+        entityManager.persist(regularUser)
         assertThat(controller.isAccessAllowed(doorId, userId, LocalDateTime.now())).isFalse
     }
-
     @Test
     internal fun isAccessAllowed_RegularUserWithRights_ReturnsTrue() {
         entityManager.persist(accessRightAlways)
-        entityManager.persist(regularRole)
+        entityManager.persist(regularUser)
         assertThat(controller.isAccessAllowed(doorId, userId, LocalDateTime.now())).isTrue
     }
 
     @Test
     internal fun isMaintenanceAccessAllowed_RegularUserWithRights_ReturnsFalse() {
         entityManager.persist(accessRightAlways)
-        entityManager.persist(regularRole)
+        entityManager.persist(regularUser)
 
         assertThat(controller.isMaintenanceAccessAllowed(doorId, userId, LocalDateTime.now())).isFalse
     }
@@ -72,7 +69,7 @@ internal class AccessControllerIntegrationTest {
     @Test
     internal fun isMaintenanceAccessAllowed_MaintainerUserWithRights_ReturnsTrue() {
         entityManager.persist(accessRightAlways)
-        entityManager.persist(maintainerRole)
+        entityManager.persist(maintainerUser)
 
         assertThat(controller.isMaintenanceAccessAllowed(doorId, userId, LocalDateTime.now())).isTrue
     }

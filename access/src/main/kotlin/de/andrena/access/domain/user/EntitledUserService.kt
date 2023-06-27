@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component
 
 @Component
 class EntitledUserService(
-    private var repository: UserRoleRepository
+    private var repository: UserRepository
 ) {
 
     fun getEntitledUser(userId: Long): EntitledUser {
-        return when (repository.findByUserId(userId)?.role) {
+        return when (repository.findItById(userId)?.role) {
             UserRole.REGULAR -> RegularUser()
             UserRole.MANAGER -> ManagerUser()
             UserRole.MAINTAINER -> MaintainerUser()

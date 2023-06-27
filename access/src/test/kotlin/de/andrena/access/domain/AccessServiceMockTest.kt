@@ -25,7 +25,6 @@ private val now = LocalDateTime.now()
 
 @ExtendWith(MockKExtension::class)
 internal class AccessServiceMockTest {
-
     @MockK
     private lateinit var userAccessRightService: UserAccessRightService
     @MockK
@@ -34,7 +33,6 @@ internal class AccessServiceMockTest {
     private var entitledUser = mockk<EntitledUser>()
     @InjectMockKs
     private lateinit var service: AccessService
-
     @BeforeEach
     internal fun setUp() {
         every { userAccessRightService.getUserAccessRight(DOOR_ID, USER_ID) } returns userAccessRight
@@ -49,7 +47,6 @@ internal class AccessServiceMockTest {
         every { entitledUser.hasAccess(userAccessRight, now) } returns true
         assertThat(service.isAccessAllowedTo(DOOR_ID, USER_ID, now)).isTrue
     }
-
     @Test
     internal fun isMaintenanceAccessAllowedTo() {
         every { entitledUser.hasMaintenanceAccess(userAccessRight, now) } returns true
