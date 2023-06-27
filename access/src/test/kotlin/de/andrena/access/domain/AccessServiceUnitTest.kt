@@ -3,9 +3,8 @@ package de.andrena.access.domain
 import de.andrena.access.domain.access.AccessRightRepository
 import de.andrena.access.domain.access.DoorRepository
 import de.andrena.access.domain.access.UserAccessRightService
+import de.andrena.access.domain.access.model.AccessRights
 import de.andrena.access.domain.access.model.Door
-import de.andrena.access.domain.access.model.alwaysAccess
-import de.andrena.access.domain.access.model.neverAccess
 import de.andrena.access.domain.user.EntitledUserService
 import de.andrena.access.domain.user.UserRoleRepository
 import de.andrena.access.domain.user.model.UserRole
@@ -49,7 +48,7 @@ internal class AccessServiceUnitTest {
 
     @Test
     internal fun isAccessAllowedTo_RegularUserWithAccess_ReturnsTrue() {
-        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns alwaysAccess()
+        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
         every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1, UserRole.REGULAR)
 
         assertThat(service.isAccessAllowedTo(doorId, userId, now)).isTrue
@@ -59,7 +58,7 @@ internal class AccessServiceUnitTest {
 
     @Test
     internal fun isAccessAllowedTo_RegularUserWithoutAccess_ReturnsFalse() {
-        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns neverAccess()
+        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.neverAccess()
         every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1,UserRole.REGULAR)
 
         assertThat(service.isAccessAllowedTo(doorId, userId, now)).isFalse
@@ -67,7 +66,7 @@ internal class AccessServiceUnitTest {
 
     @Test
     internal fun isMaintenanceAccessAllowedTo_RegularUserWithAccess_ReturnsFalse() {
-        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns alwaysAccess()
+        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
         every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1,UserRole.REGULAR)
 
         assertThat(service.isMaintenanceAccessAllowedTo(doorId, userId, now)).isFalse
@@ -75,7 +74,7 @@ internal class AccessServiceUnitTest {
 
     @Test
     internal fun isMaintenanceAccessAllowedTo_MaintainerUserWithAccess_ReturnsTrue() {
-        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns alwaysAccess()
+        every { accessRightRepo.findByUserIdAndDoorId(userId, doorId) } returns AccessRights.alwaysAccess()
         every { userRoleRepository.findByUserId(userId) } returns UserRoleEntry(-1,UserRole.MAINTAINER)
 
         assertThat(service.isMaintenanceAccessAllowedTo(doorId, userId, now)).isTrue

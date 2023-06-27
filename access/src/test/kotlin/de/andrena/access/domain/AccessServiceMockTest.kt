@@ -1,7 +1,7 @@
 package de.andrena.access.domain
 
 import de.andrena.access.domain.access.UserAccessRightService
-import de.andrena.access.domain.access.model.UserAccessRight
+import de.andrena.access.domain.access.model.UserAccessRights
 import de.andrena.access.domain.user.EntitledUserService
 import de.andrena.access.domain.user.model.EntitledUser
 import io.mockk.checkUnnecessaryStub
@@ -30,7 +30,7 @@ internal class AccessServiceMockTest {
     private lateinit var userAccessRightService: UserAccessRightService
     @MockK
     private lateinit var entitledUserService: EntitledUserService
-    private var userAccessRight = mockk<UserAccessRight>()
+    private val userAccessRight = UserAccessRights.alwaysAccess()
     private var entitledUser = mockk<EntitledUser>()
     @InjectMockKs
     private lateinit var service: AccessService

@@ -1,4 +1,4 @@
-package de.andrena.access.domain
+package de.andrena.access.domain.user
 
 import de.andrena.access.domain.user.*
 import de.andrena.access.domain.user.model.*
@@ -6,7 +6,6 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
@@ -19,7 +18,7 @@ private const val userId = 123L
 internal class EntitledUserServiceTest {
 
     @MockK
-    private var userRoleRepository = mockk<UserRoleRepository>()
+    private lateinit var userRoleRepository: UserRoleRepository
 
     @InjectMockKs
     private lateinit var service: EntitledUserService
